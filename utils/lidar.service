@@ -1,0 +1,17 @@
+[Unit]
+Description=lidar gui
+Wants=graphical.target network-online.target
+After=graphical.target network.target network-online.target
+
+[Service]
+Environment=DISPLAY=:0.0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Type=simple
+ExecStart=/bin/bash /home/pi/lidar.sh
+Restart=on-abort
+User=pi
+Group=pi
+
+[Install]
+WantedBy=graphical.target
+
