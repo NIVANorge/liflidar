@@ -1,0 +1,7 @@
+ServerAliveInterval 600
+
+Host dovm
+    Hostname 134.122.65.55
+    User sia
+    IdentityFile /home/pi/.ssh/open
+

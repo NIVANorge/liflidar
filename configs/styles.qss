@@ -1,0 +1,173 @@
+* {font-family: Verdana;}
+
+QProgressBar {
+  background-color: #19232D;
+  border: 1px solid #32414B;
+  color: #F0F0F0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+QProgressBar:disabled {
+  background-color: #19232D;
+  border: 1px solid #32414B;
+  color: #787878;
+  border-radius: 4px;
+  text-align: center;
+}
+
+QProgressBar::chunk {
+  background-color: #79c98d;
+  color: #19232D;
+  border-radius: 4px;
+}
+QProgressBar::chunk:disabled {
+  background-color: #14506E;
+  color: #787878;
+  border-radius: 4px;
+}
+
+QLabel {
+  border: 0px solid #32414B;
+  padding: 3px;
+  margin: 0px;
+}
+
+QSlider::handle:horizontal { background: #505F69;}
+
+QSlider::sub-page {background: #79c98d;}
+
+QPushButton {
+  font-size: 10pt;
+  background-color: #32414B;
+  border: 1px solid #32414B;
+  color: #F0F0F0;
+  border-radius: 4px;
+  padding: 3px;
+  outline: none;
+}
+
+
+QPushButton:disabled {
+  background-color:  #878787;
+  border: 1px solid #878787;
+  color: #F0F0F0;
+  border-radius: 4px;
+  padding: 3px;
+}
+
+QPushButton:checked:enabled {
+  background-color: #79c98d;
+  color: #F0F0F0;
+  border: 1px solid #32414B;
+  border-radius: 4px;
+  padding: 3px;
+  outline: none;}
+
+QPushButton:checked:disabled {
+  background-color: #79c98d;
+  color: #32414B;
+  border: 1px solid #32414B;
+  border-radius: 4px;
+  padding: 3px;
+  outline: none;}
+
+
+QPushButton:hover {
+  color: white;
+  font-size: 11pt;
+}
+
+QGroupBox {
+  font-weight: bold;
+  font-size: 10pt;
+  border:1px solid #32414B;
+  border-radius: 4px;
+  margin-top: 1em;
+  margin-right: 0em;
+  margin-bottom: 0em;
+}
+
+QGroupBox::title {
+    top: -10px;
+    left: 10px;}
+
+
+QRadioButton {
+  spacing: 0px;
+  padding: 0px;
+  border: none;
+  outline: none;
+}
+
+QRadioButton::indicator {
+        width: 50px;
+        height: 50px;
+        outline: none;
+        margin-left: 0px;}
+
+
+ QLineEdit{
+  font-size: 13pt;
+  background-color: #caedd2;
+  padding-top: 0em;
+  /* This QLineEdit fix  103, 111 */
+  padding-bottom: 2px;
+  /* This QLineEdit fix  103, 111 */
+  border-style: solid;
+  border-radius: 4px;
+  color: #19232D;
+  max-width: 150px;
+   }
+
+QTextEdit{
+  padding-top: 0em;
+  max-height: 40px;
+  background-color: #caedd2;
+  color: #19232D;
+}
+
+
+
+
+QCheckBox:disabled::QLabel {
+    color:black;
+    font-size: 10pt;
+}
+
+QCheckBox::indicator{
+  width: 1.0em;
+  height: 1.0em;
+  border: 2px solid #5A5A5A;
+}
+
+QCheckBox::indicator::checked {
+  background-color: #79c98d;}
+
+QCheckBox::indicator::indeterminate {
+    background-color: #c7352a;}
+
+QCheckBox::indicator::unchecked  {
+  background-color: white; }
+
+
+QTabBar::tab {width: 4em;height: 2em; font-size: 10pt; 
+              margin-bottom: 0;}
+QSpinBox {margin-right: 0px; max-width: 30px;}
+QLabel {font-size: 10pt;}
+
+QToolTip {font-size: 11pt;
+          background-color: black;
+          }
+
+QSpinBox {
+ min-width: 3em;
+ font-size: 10pt;
+}
+/* QSpinBox {
+    padding-right: 15px ;  make room for the arrows
+    margin-right: 1px;
+     border-image: url(:/images/frame.png) 4;
+    border-width: 3;
+
+*/
