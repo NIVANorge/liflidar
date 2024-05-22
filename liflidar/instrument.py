@@ -30,14 +30,14 @@ class Instrument:
 
         # initaialisation ADC //// Reading photodiodes
         # set adress for the ADC 8adress pin 1-4, adress pin 5-8, bit rate)
-        # self.adc = ADCPi(0x6A, 0x6B, 16)
+        self.adc = ADCPi(0x6A, 0x6B, 16)
         # 12 bit (240SPS max)
         # 14 bit (60SPS max)
         # 16 bit (15SPS max)
         # 18 bit (3.75SPS max)
 
         # set adc gain
-        # self.adc.set_pga(1)
+        self.adc.set_pga(1)
 
         # set adc accuracy // speed
         # adc.setBitRate(16)

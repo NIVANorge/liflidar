@@ -25,8 +25,7 @@ from PyQt5 import QtCore, QtWidgets
 
 
 class DataHandler:
-    def __init__(self, instrument):
-        n_plots = 2
+    def __init__(self, instrument, n_plots):
         n_data = 50
         self.instrument = instrument()
         self._xdata = [list(range(n_data)) for _ in range(n_plots)]
@@ -34,6 +33,7 @@ class DataHandler:
 
     def update_ydata(self):
         # Drop off the first y element, append a new one.
+        # ydata = self.instrument.measurement()
         for i in range(len(self._ydata)):
             self._ydata[i] = self._ydata[i][1:] + [random.randint(0, 10)]
 
@@ -47,8 +47,8 @@ class DataHandler:
 
 
 class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent=None, width=20, height=7, dpi=300):
-        fig, self.axes = plt.subplots(nrows=1, ncols=2, figsize=(width, height))  # , dpi=dpi)
+    def __init__(self, parent=None, nrows=1, ncols=1):  # , width=20, height=7):
+        fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols)  # , figsize=(width, height))  # , dpi=dpi)
         super().__init__(fig)
 
 
@@ -56,16 +56,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, instrument, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.data_handler = DataHandler(instrument)  # get data handler instead of instrument
+        n_rows, n_cols = 3, 3
+        n_plots = n_rows * n_cols
+        self.data_handler = DataHandler(instrument, n_plots)  # get data handler instead of instrument
 
-        self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.setWindowTitle("Liflidar")
+        # self.setGeometry(100, 100, 800, 600)  # x pos, y pos, width, height 
+
+        self.canvas = MplCanvas(self, nrows=n_rows, ncols=n_cols)  # , width=5, height=4)
         self.setCentralWidget(self.canvas)
 
         # We need to store a reference to the plotted line
         # somewhere, so we can apply the new data to it.
-        self._plot_refs = [None, None]
+        self._plot_refs = [None] * n_plots
         self.initial_plot()
-        self.show()
+
+        self.show()  # keep it to make maximized work
+        self.showMaximized()
+        # self.showFullScreen()
 
         # Setup a timer to trigger the redraw by calling update_plot.
         self.timer = QtCore.QTimer()
@@ -78,7 +86,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # .plot returns a list of line <reference>s, as we're
         # only getting one we can take the first element.
         xdata, ydata = self.data_handler.empty_axes_data()
-        for i, (ax, x, y) in enumerate(zip(self.canvas.axes, xdata, ydata, strict=True)):
+        for i, (ax, x, y) in enumerate(zip(self.canvas.axes.flatten(), xdata, ydata, strict=True)):
             plot_ref = ax.plot(x, y, "r")
             self._plot_refs[i] = plot_ref[0]
 
