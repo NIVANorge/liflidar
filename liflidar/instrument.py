@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import random
 import time
 
 import numpy as np
@@ -118,9 +119,9 @@ class Instrument:
 
         # calculate absolute concentrations
         # chl-a, background chl- a, signal Raman, background Raman, signal CDOM, background CDOM, and estimation of:
-        Raman = Vm_raman - Vm_raman_b
-        Chla = self.cal_chla[0] * (np.log(Vm_chla - Vm_chla_b) / np.log(Raman)) + self.cal_chla[1]
-        Cdom = self.cal_cdom[0] * ((Vm_cdom - Vm_cdom_b) / Raman) + self.cal_cdom[1]
+        Raman = random.randint(0, 10)  # Vm_raman - Vm_raman_b
+        Chla = random.randint(0, 10)  # self.cal_chla[0] * (np.log(Vm_chla - Vm_chla_b) / np.log(Raman)) + self.cal_chla[1]
+        Cdom = random.randint(0, 10)  # self.cal_cdom[0] * ((Vm_cdom - Vm_cdom_b) / Raman) + self.cal_cdom[1]
 
         return Raman, Chla, Cdom
 

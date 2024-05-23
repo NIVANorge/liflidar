@@ -12,16 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import random
 import sys
 
 import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+from asyncqt import QEventLoop, asyncSlot
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from PyQt5 import QtCore, QtWidgets
 
 matplotlib.use("Qt5Agg")
-
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg  # , NavigationToolbar2QT
-from PyQt5 import QtCore, QtWidgets
+sns.set_theme(style="whitegrid")
 
 
 class DataHandler:
@@ -31,9 +34,12 @@ class DataHandler:
         self._xdata = [list(range(n_data)) for _ in range(n_plots)]
         self._ydata = [[0 for _ in range(n_data)] for _ in range(n_plots)]
 
-    def update_ydata(self):
+    async def update_ydata(self):
+        def _update_ydate():
+            return self.instrument.measurement()
+
+        ydata = await asyncio.get_running_loop().run_in_executor(None, _update_ydate)
         # Drop off the first y element, append a new one.
-        # ydata = self.instrument.measurement()
         for i in range(len(self._ydata)):
             self._ydata[i] = self._ydata[i][1:] + [random.randint(0, 10)]
 
@@ -41,14 +47,14 @@ class DataHandler:
         return self._xdata, self._ydata
 
     @property
-    def ydata(self):
-        self.update_ydata()
+    async def ydata(self):
+        await self.update_ydata()
         return self._ydata
 
 
 class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent=None, nrows=1, ncols=1):  # , width=20, height=7):
-        fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols)  # , figsize=(width, height))  # , dpi=dpi)
+    def __init__(self, parent=None, nrows=1, ncols=1):
+        fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols)
         super().__init__(fig)
 
 
@@ -61,10 +67,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_handler = DataHandler(instrument, n_plots)  # get data handler instead of instrument
 
         self.setWindowTitle("Liflidar")
-        # self.setGeometry(100, 100, 800, 600)  # x pos, y pos, width, height 
+        self.setGeometry(100, 100, 800, 600)  # x pos, y pos, width, height
 
-        self.canvas = MplCanvas(self, nrows=n_rows, ncols=n_cols)  # , width=5, height=4)
-        self.setCentralWidget(self.canvas)
+        self.canvas = MplCanvas(self, nrows=n_rows, ncols=n_cols)
+        toolbar = NavigationToolbar2QT(self.canvas, self) 
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(toolbar)
+        layout.addWidget(self.canvas)
+
+        widget = QtWidgets.QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+        # self.setCentralWidget(self.canvas)
 
         # We need to store a reference to the plotted line
         # somewhere, so we can apply the new data to it.
@@ -72,7 +87,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initial_plot()
 
         self.show()  # keep it to make maximized work
-        self.showMaximized()
+        # self.showMaximized()
         # self.showFullScreen()
 
         # Setup a timer to trigger the redraw by calling update_plot.
@@ -80,6 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.setInterval(100)
         self.timer.timeout.connect(self.update_plot)
         self.timer.start()
+        self.update_flag = False
 
     def initial_plot(self):
         # First time we have no plot reference, so do a normal plot.
@@ -88,17 +104,28 @@ class MainWindow(QtWidgets.QMainWindow):
         xdata, ydata = self.data_handler.empty_axes_data()
         for i, (ax, x, y) in enumerate(zip(self.canvas.axes.flatten(), xdata, ydata, strict=True)):
             plot_ref = ax.plot(x, y, "r")
+            ax.set_ylim(0, 10)
+            # ax.set_aspect('equal', adjustable='box')
             self._plot_refs[i] = plot_ref[0]
 
-    def update_plot(self):
+    @asyncSlot()
+    async def update_plot(self):
+        if self.update_flag:
+            return
+        self.update_flag = True
         # We have a reference, we can use it to update the data for that line.
-        for plot_ref, ydata in zip(self._plot_refs, self.data_handler.ydata, strict=True):
-            plot_ref.set_ydata(ydata)
+        ydata = await self.data_handler.ydata
+        for plot_ref, y in zip(self._plot_refs, ydata, strict=True):
+            plot_ref.set_ydata(y)
         # Trigger the canvas to update and redraw.
         self.canvas.draw()
+        self.update_flag = False
 
 
 def run_gui(instrument):
     app = QtWidgets.QApplication(sys.argv)
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
     _ = MainWindow(instrument)
     app.exec_()
