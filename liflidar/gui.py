@@ -20,7 +20,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from asyncqt import QEventLoop, asyncSlot
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from PyQt5 import QtCore, QtWidgets
 
 matplotlib.use("Qt5Agg")
@@ -70,14 +70,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setGeometry(100, 100, 800, 600)  # x pos, y pos, width, height
 
         self.canvas = MplCanvas(self, nrows=n_rows, ncols=n_cols)
-        toolbar = NavigationToolbar2QT(self.canvas, self) 
 
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(toolbar)
-        layout.addWidget(self.canvas)
+        vbox = QtWidgets.QVBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
+
+        btn1 = QtWidgets.QPushButton('Button 1', self)
+        btn2 = QtWidgets.QPushButton('Button 2', self)
+        btn3 = QtWidgets.QPushButton('Button 3', self)
+
+        # Add buttons to the horizontal layout
+        hbox.addWidget(btn1)
+        hbox.addWidget(btn2)
+        hbox.addWidget(btn3)
+
+        vbox.addLayout(hbox)
+        vbox.addWidget(self.canvas)
 
         widget = QtWidgets.QWidget()
-        widget.setLayout(layout)
+        widget.setLayout(vbox)
         self.setCentralWidget(widget)
         # self.setCentralWidget(self.canvas)
 
