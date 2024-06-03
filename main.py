@@ -12,13 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import logging
 
 from liflidar import Instrument, run_gui
 
 
 def main():
-    logging.root.level = logging.DEBUG
+    parser = argparse.ArgumentParser(description='Liflidar.')
+    parser.add_argument('--debug', action='store_true', help='Enable logging to debug level.')
+
+    args = parser.parse_args()
+
+    if args.debug:
+        logging.root.level = logging.DEBUG
     for name, logger in logging.root.manager.loggerDict.items():
         if 'asyncqt' in name:
             logger.level = logging.INFO

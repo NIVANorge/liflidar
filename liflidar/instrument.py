@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import random
 import time
 
 import numpy as np
@@ -119,100 +118,8 @@ class Instrument:
 
         # calculate absolute concentrations
         # chl-a, background chl- a, signal Raman, background Raman, signal CDOM, background CDOM, and estimation of:
-        Raman = random.randint(0, 10)  # Vm_raman - Vm_raman_b
-        Chla = random.randint(0, 10)  # self.cal_chla[0] * (np.log(Vm_chla - Vm_chla_b) / np.log(Raman)) + self.cal_chla[1]
-        Cdom = random.randint(0, 10)  # self.cal_cdom[0] * ((Vm_cdom - Vm_cdom_b) / Raman) + self.cal_cdom[1]
+        Raman = Vm_raman - Vm_raman_b
+        Chla = self.cal_chla[0] * (np.log(Vm_chla - Vm_chla_b) / np.log(Raman)) + self.cal_chla[1]
+        Cdom = self.cal_cdom[0] * ((Vm_cdom - Vm_cdom_b) / Raman) + self.cal_cdom[1]
 
-        return Raman, Chla, Cdom
-
-        # print & save data
-        # print(
-        #     date,
-        #     "\t",
-        #     "Raman = ",
-        #     f"{Raman:.5f}",
-        #     "\t",
-        #     "Chla = ",
-        #     f"{Chla:.5f}",
-        #     "\t",
-        #     "cdom = ",
-        #     f"{Cdom:.5f}",
-        #     "\n",
-        #     "V_raman = ",
-        #     f"{Vm_raman:.5f}",
-        #     "\t",
-        #     "V_chla = ",
-        #     f"{Vm_chla:.5f}",
-        #     "\t",
-        #     "V_cdom = ",
-        #     f"{Vm_cdom:.5f}",
-        #     "\n",
-        #     "V_raman_back = ",
-        #     f"{Vm_raman_b:.5f}",
-        #     "\t",
-        #     "V_chla_back = ",
-        #     f"{Vm_chla_b:.5f}",
-        #     "\t",
-        #     "V_cdom_back = ",
-        #     f"{Vm_cdom_b:.5f}",
-        #     "\n",
-        # )
-
-        # print(
-        #     "Var_raman = ",
-        #     f"{Va_raman:.5f}",
-        #     "\t",
-        #     "Var_chla = ",
-        #     f"{Va_chla:.5f}",
-        #     "\t",
-        #     "Var_cdom = ",
-        #     f"{Va_cdom:.5f}",
-        #     "\n",
-        #     "Var_raman_back = ",
-        #     f"{Va_raman_b:.5f}",
-        #     "\t",
-        #     "Var_chla_back = ",
-        #     f"{Va_chla_b:.5f}",
-        #     "\t",
-        #     "Var_cdom_back = ",
-        #     f"{Va_cdom_b:.5f}",
-        #     "\n",
-        # )
-
-        # fp = open("data_LIDAR.txt", "a")
-        # # header = ( "date", "Raman")
-        # fp.write(
-        #     date
-        #     + "\t"
-        #     + f"{Raman:.5f}"
-        #     + "\t"
-        #     + f"{Chla:.5f}"
-        #     + "\t"
-        #     + f"{Cdom:.5f}"
-        #     + "\t"
-        #     + f"{Vm_raman:.5f}"
-        #     + "\t"
-        #     + f"{Vm_chla:.5f}"
-        #     + "\t"
-        #     + f"{Vm_cdom:.5f}"
-        #     + "\t"
-        #     + f"{Vm_raman_b:.5f}"
-        #     + "\t"
-        #     + f"{Vm_chla_b:.5f}"
-        #     + "\t"
-        #     + f"{Vm_cdom_b:.5f}"
-        #     + "\t"
-        #     + f"{Va_raman:.5f}"
-        #     + "\t"
-        #     + f"{Va_chla:.5f}"
-        #     + "\t"
-        #     + f"{Va_cdom:.5f}"
-        #     + "\t"
-        #     + f"{Va_raman_b:.5f}"
-        #     + "\t"
-        #     + f"{Va_chla_b:.5f}"
-        #     + "\t"
-        #     + f"{Va_cdom_b:.5f}"
-        #     + "\n"
-        # )
-        # fp.close()
+        return Vm_raman, Vm_chla, Vm_cdom, Vm_raman_b, Vm_chla_b, Vm_cdom_b, Raman, Chla, Cdom

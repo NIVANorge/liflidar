@@ -12,7 +12,10 @@
             "console": "integratedTerminal",
             "env": {                 
                 "DISPLAY": "localhost:10.0",
-            }
+            },
+            "args": [
+                "--debug",
+            ],
         }
     ]
 }
