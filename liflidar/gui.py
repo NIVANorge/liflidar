@@ -59,7 +59,7 @@ class DataHandler:
         if not os.path.isfile(self.csv_file_path):
             with open(self.csv_file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(COLUMNS)
+                writer.writerow(["Date"] + COLUMNS)
 
     # Function to append data to the CSV file
     def append_data(self, data):
@@ -71,9 +71,9 @@ class DataHandler:
         def _update_ydate():
             return self.instrument.measurement()
 
-        ydata = await asyncio.get_running_loop().run_in_executor(None, _update_ydate)
+        ydata, date = await asyncio.get_running_loop().run_in_executor(None, _update_ydate)
         ydata = [0 if math.isnan(y) else y for y in ydata]
-        self.append_data(ydata)
+        self.append_data([date] + ydata)
         combined_string = ", ".join([f"{name}: {value}" for name, value in zip(COLUMNS, ydata, strict=True)])
         logging.debug(combined_string)
         # Drop off the first y element, append a new one.
@@ -152,7 +152,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for i, (ax, x, y, name) in enumerate(zip(self.canvas.axes.flatten(), xdata, ydata, COLUMNS, strict=True)):
             plot_ref = ax.plot(x, y, "r")
             ax.set_title(name, fontsize=13, color='blue', loc='left')
-            ax.set_ylim(0, 10)
+            # ax.set_ylim(0, 10)
             # ax.set_aspect('equal', adjustable='box')
             self._plot_refs[i] = plot_ref[0]
 

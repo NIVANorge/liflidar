@@ -16,6 +16,15 @@
             "args": [
                 "--debug",
             ],
-        }
+        },
+        {
+            "name": "current file",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd":"${fileDirname}",
+        },
     ]
 }

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import time
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -30,7 +31,7 @@ class Instrument:
 
         # initaialisation ADC //// Reading photodiodes
         # set adress for the ADC 8adress pin 1-4, adress pin 5-8, bit rate)
-        self.adc = ADCPi(0x6A, 0x6B, 16)
+        self.adc = ADCPi(0x6A, 0x6B, 12)
         # 12 bit (240SPS max)
         # 14 bit (60SPS max)
         # 16 bit (15SPS max)
@@ -43,11 +44,11 @@ class Instrument:
         # adc.setBitRate(16)
 
         # time it takes to read 3 channels on the adc (with 16bits config) (ms)
-        self.read_time = 200  # to be measured
+        self.read_time = 0.015  # to be measured
         # laser modulation frequency (Hz) (10-12Hz)
-        self.f_laser = 2  # Hz
-        # laser_wait = (1/f_laser)/2*1000 - read_time#(ms) T(period)/2 (s)
-        self.laser_wait = 2
+        self.f_laser = 10  # Hz
+        self.laser_wait = (1 / self.f_laser) / 2 - self.read_time  # (ms) T(period)/2 (s)
+        # self.laser_wait = 0
         # channel number photodiodes setup
         self.ch_cdom = 3
         self.ch_chla = 2
@@ -73,11 +74,11 @@ class Instrument:
         V_chla_b = []
         V_cdom_b = []
 
-        # date = time.strftime("%Y-%m-%d %H:%M:%S")
+        # date = time.strftime("%Y-%m-%d %H:%M:%S.%f")
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-        # start_time = time.perf_counter()
-        # while (time.perf_counter() - start_time) < Samp_int:
         while n_cycle < self.nb_meas:
+            start_time = time.perf_counter()
             n_cycle += 1
 
             # turn on laser (channel, Voltage (4 is the max - maybe))
@@ -97,6 +98,7 @@ class Instrument:
             V_raman_b += [self.adc.read_voltage(self.ch_raman)]
             V_chla_b += [self.adc.read_voltage(self.ch_chla)]
             V_cdom_b += [self.adc.read_voltage(self.ch_cdom)]
+            print(f"A loop: {time.perf_counter() - start_time}")
 
         # maybe too slow, then separate the 3 channels in 3 cycles.. but then raman from different sample...
 
@@ -122,4 +124,9 @@ class Instrument:
         Chla = self.cal_chla[0] * (np.log(Vm_chla - Vm_chla_b) / np.log(Raman)) + self.cal_chla[1]
         Cdom = self.cal_cdom[0] * ((Vm_cdom - Vm_cdom_b) / Raman) + self.cal_cdom[1]
 
-        return Vm_raman, Vm_chla, Vm_cdom, Vm_raman_b, Vm_chla_b, Vm_cdom_b, Raman, Chla, Cdom
+        return (Vm_raman, Vm_chla, Vm_cdom, Vm_raman_b, Vm_chla_b, Vm_cdom_b, Raman, Chla, Cdom), date
+
+
+if __name__ == "__main__":
+    instrument = Instrument()
+    instrument.measurement()
