@@ -2,5 +2,5 @@
 
 sudo pigpiod
 
-source /home/pi/env/bin/activate
-python /home/pi/liflidar/gui.py > /home/pi/log.out 2>&1
+source /home/pi/pyenv/bin/activate
+python /home/pi/liflidar/main.py > /home/pi/log.out 2>&1

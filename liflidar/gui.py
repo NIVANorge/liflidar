@@ -111,9 +111,10 @@ class MainWindow(QtWidgets.QMainWindow):
         vbox = QtWidgets.QVBoxLayout()
         hbox = QtWidgets.QHBoxLayout()
 
-        btn1 = QtWidgets.QPushButton("Button 1", self)
-        btn2 = QtWidgets.QPushButton("Button 2", self)
-        btn3 = QtWidgets.QPushButton("Button 3", self)
+        btn1 = QtWidgets.QPushButton("LASER POWER")
+        btn1.setCheckable(True)
+        btn2 = QtWidgets.QPushButton("clear plot")
+        btn3 = QtWidgets.QPushButton("Button 3")
 
         # Add buttons to the horizontal layout
         hbox.addWidget(btn1)
@@ -143,18 +144,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.update_plot)
         self.timer.start()
         self.update_flag = False
+        
+        btn1.clicked.connect(self.turn_off_laser)
+        btn2.clicked.connect(self.clear_plot)
 
+    def turn_off_laser(self):
+        self.data_handler.instrument.dac.set_dac_voltage(1, 0)
+            
     def initial_plot(self):
         # First time we have no plot reference, so do a normal plot.
         # .plot returns a list of line <reference>s, as we're
         # only getting one we can take the first element.
+        y_limits = [(0, 0.5), (0, 0.5), (0, 1), (0, 0.5), (0, 0.5), (0, 1), (0, 0.5), (0, 0.5), (0, 0.5)]
+
         xdata, ydata = self.data_handler.empty_axes_data()
-        for i, (ax, x, y, name) in enumerate(zip(self.canvas.axes.flatten(), xdata, ydata, COLUMNS, strict=True)):
+        for i, (ax, x, y, name, limits) in enumerate(zip(self.canvas.axes.flatten(), xdata, ydata, COLUMNS,y_limits, strict=True)):
             plot_ref = ax.plot(x, y, "r")
             ax.set_title(name, fontsize=13, color='blue', loc='left')
-            # ax.set_ylim(0, 10)
+            #ax.set_ylim(0, 5)
+            ax.set_ylim(*limits) 
             # ax.set_aspect('equal', adjustable='box')
             self._plot_refs[i] = plot_ref[0]
+    
+    def clear_plot(self):
+        n_rows, n_cols = 3, 3
+        self.canvas = MplCanvas(self, nrows=n_rows, ncols=n_cols)
+        self.initial_plot()
 
     @asyncSlot()
     async def update_plot(self):
